@@ -6,7 +6,7 @@
 #' @param test test data where rows represent genes and columns represent samples
 #' @return numeric vector of posterior probabilities for each group
 #' @export
-#' examples
+#' @examples
 #' y <- matrix(rnbinom(n=1000*200, prob=1/2, size=3),1000,200)
 #' colnames(y) <- c(paste0("T",1:100),paste0("N",1:100))
 #' y[1:500,101:200] <- y[1:500,101:200]+100
