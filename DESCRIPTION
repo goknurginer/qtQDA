@@ -1,10 +1,15 @@
 Package: qtQDA
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.5.3)
-License: What license is it under?
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 6.1.1.9000
+Version: 0.3.0
+Date: 2019-08-24
+Title: Classify Samples From RNA-Seq Datasets
+Description: Classify the RNA-Seq gene expression profiles into existing groups.
+Author: Necla Kochan, Goknur Giner, Gordon Smyth and Luke Gandolfo
+Maintainer: Necla Kochan <necla.kayaalp@gmail.com> and Goknur Giner <giner.g@wehi.edu.au>
+License: GPL (>=2)
+Imports: corpcor, cvTools, edgeR
+Suggests: BiocStyle, Rsubread
+URL: https://github.com/goknurginer/qtQDA
+BugReports: https://github.com/goknurginer/qtQDA/issues
+biocViews: GeneExpression, Transcription, RNASeq, Transcriptomics,
+        Classification
+NeedsCompilation: no

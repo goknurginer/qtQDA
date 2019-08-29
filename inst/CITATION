@@ -1,0 +1,10 @@
+bibentry(bibtype = "article",
+  author = c(person("Necla","Kochan"),
+             person(c("Yazgi","G"),"Tuntuncu"),
+             person(c("Gordon","K"),"Smyth"),
+             person("Luke","Gandolfo"),
+             person("Goknur","Giner")),
+  title = "{qtQDA}: a new classiffier for {RNA}-seq data",
+  journal = "BioRxiv",
+  year = 2019,
+)

@@ -1,0 +1,111 @@
+%\VignetteIndexEntry{Classifying RNA-seq Samples with qtQDA}
+%\VignettePackage{BiocStyle}
+%\VignetteEngine{utils::Sweave}
+
+\documentclass{article}
+
+<<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\newcommand{\code}[1]{{\small\texttt{#1}}}
+
+\title{Classifying RNA-seq Samples with qtQDA}
+\author[1]{Necla Ko\c{c}han}
+\author[2,3]{Gordon K.\ Smyth}
+\author[2,3]{Luke Gandolfo}
+\author[2,4]{G\"oknur Giner}
+\affil[1]{Department of Mathematics, Izmir University of Economics, Izmir, Turkey}
+\affil[2]{The Walter and Eliza Hall Institute of Medical Research, 1G Royal Parade, Parkville, Victoria 3052, Australia}
+\affil[3]{School of Mathematics and Statistics, The University of Melbourne, Victoria 3010, Australia}
+\affil[4]{Department of Medical Biology, The University of Melbourne, Victoria 3010, Australia}
+
+\date{First edition 02 August 2019\\
+Last revised 24 August 2019}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Here we present how to use \Biocpkg{qtQDA} package to classify RNA-seq samples and how to resample to assess the precision of the \Rfunction{qtQDA} function.
+\end{abstract}
+
+\packageVersion{\Sexpr{BiocStyle::pkg_ver("qtQDA")}}
+
+Report issues on \url{https://github.com/goknurginer/qtQDA/issues}
+
+\tableofcontents
+
+\section{Introduction}
+This package contains functions for quadratic discrimant analysis, classifying and resampling RNA-seq samples as well as a helper function to perform differential expression (DE) analysis and generate a table of top DE features.
+
+Start with loading the \Biocpkg{qtQDA} package.
+<<default-packages>>=
+library(qtQDA)
+@
+
+\section{Classifying cervical cancer samples}
+The cervical cancer data \cite{Witten2010} consists of two classes, cancer and noncancer, each with 29 samples. Each sample consists of counts for 714 different microRNAs obtained using RNA-seq.
+The data comes with \Biocpkg{qtQDA} and can be loaded by:
+<<cervical-load>>=
+data("cervical")
+head(cervical)
+@
+In the following code, we select the first 5 and the last 5 samples as test sets and the rest of the samples are used to train the the \Rfunction{qtQDA} algorithm. 
+<<cervical-default-objects>>=
+training <- cervical[, c(6:53)]
+training.labels <- c(rep("N", 24), rep("T", 24))
+test <- cervical[, c(1:5,54:58)]
+test.labels <-c(rep("N", 5), rep("T", 5))
+@
+Run \Rfunction{qtQDA} with the default settings. 
+This will estimate 10 classes for 10 test set using the entire list of features, i.e. 714 features. 
+<<qtQDA-default>>=
+qtQDA(training=training, test=test, training.labels=training.labels, 
+      dispersion="tagwise") 
+@
+To run \Rfunction{qtQDA} for different number of features selected from the top table obtained using \Rfunction{glmLRTqtQDA}. 
+In this case the resulting table will contain 10 estimated samples for every single number of feature.
+<<qtQDA-numgenes>>=
+qtQDA(training=training, test=test, training.labels=training.labels, 
+num.genes=c(20, 50, 100, 200, 300, 500, 714), dispersion="tagwise")
+@
+As a default, prior probabilities computed from the given training samples. 
+Prior probabilities can be defined by the user as given below:
+<<qtQDA-prior>>=
+qtQDA(training=training, test=test, training.labels=training.labels, 
+prior=c(0.2,0.8), dispersion="tagwise")
+@
+\section{Resampling cervical cancer samples}
+In this section we use resampling methods bootstrapping (random sampling with replacement) and cross validation (randomly dividing the samples into training and test sets). 
+The function \Rfunction{qtQDA.resampling} is designed for this purpose.
+Unlike \Rfunction{qtQDA}, \Rfunction{qtQDA.resampling} does not require test sets since test samples are reselected during each resampling.
+We use the entire cervical data set to train the algorithm.
+<<training-set>>=
+training <- cervical
+training.labels <- c(rep("N", 29), rep("T", 29))
+@
+
+\subsection{Bootstrapping}
+Here we run \Rfunction{qtQDA.resampling} with default settings for \code{resampling} to be \code{bootstrap}. 
+<<bootstrap>>=
+qtQDA.resampling(training, training.labels, resampling="bootstrap", 
+                 dispersion="tagwise", nbs = 2)
+@
+The estimated classes generated here come from the latest bootstrap sampling and the mean estimated error rates are the mean error rates over 300 bootstrap sampling.
+\subsection{Cross validation}
+Here we run \Rfunction{qtQDA.resampling} with default settings for \code{resampling} to be \code{cross.validation}. 
+<<cross-validation>>=
+qtQDA.resampling(training, training.labels, resampling="cross.validation", 
+                 dispersion="tagwise", nfold = 7 )
+@
+Similar to \code{bootstrap}, the estimated classes generated here come from the last fold in cross validation sampling and the mean estimated error rates are the mean error rates over number of folds.
+Similar to \Rfunction{qtQDA}, number of genes and prior probabilities can be defined by the user.
+<<sessionInfo>>=
+sessionInfo()
+@
+
+\bibliography{qtQDA}
+
+\end{document}
