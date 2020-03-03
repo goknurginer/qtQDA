@@ -14,9 +14,10 @@ For complete list of functions and instructions:
 ```r
 library(help = "qtQDA") 
 ```
-
-To view the vignette:
+Note that devtools does not build vignettes by default. To view the vignette: 
 ```r
+devtools::install_github("goknurginer/qtQDA", build_vignettes = TRUE)
+library(qtQDA)
 vignette("qtQDA")
 ```
 
